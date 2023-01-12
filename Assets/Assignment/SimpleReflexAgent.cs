@@ -15,17 +15,37 @@ public class SimpleReflexAgent : AgentController<MsPacMan>
 
     MazeMap map;
     Eyes eyes;
+    MsPacMan msPacMan;
 
     protected  override void Awake()
     {
         base.Awake();
         map = GetComponent<MazeMap>();
         eyes = GetComponent<Eyes>();
+        msPacMan = GetComponent<MsPacMan>();
+    }
+
+    private void Update() {
+        var directions = map.GetPossibleMoves();
+        var directions2 = map.GetPossibleMoves();
+        foreach(Direction direction in directions) {
+            if(eyes.Look(direction).type == PerceptType.GHOST) {
+                directions2.Remove(direction);
+            }
+        }
+        foreach(Direction direction in directions2) {
+            if(eyes.Look(direction).type == PerceptType.ITEM) {
+                 msPacMan.Move(direction);
+                 return;
+            }
+        }
+        msPacMan.Move(directions2[Random.Range(0, directions2.Count)]);
     }
 
 	public override void OnDecisionRequired()
     {
-       // throw new System.NotImplementedException();
+    
+       //this.GetComponent<MsPacMan>().Move(Direction.LEFT);
     }
 
     public override void OnTileReached()
