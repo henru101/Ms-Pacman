@@ -5,6 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(MazeMap))]
+[RequireComponent(typeof(Eyes))]
 public class SearchMsPacMan<Data> : AgentController<MsPacMan> where Data : MazeGraph<Data>.PositionData, new()
 {
 
