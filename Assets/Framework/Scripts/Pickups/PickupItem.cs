@@ -25,5 +25,6 @@ public enum PickupType
 {
     PILL,
     CHERRY,
-    POWER_PELLET
+    POWER_PELLET,
+    NONE
 }

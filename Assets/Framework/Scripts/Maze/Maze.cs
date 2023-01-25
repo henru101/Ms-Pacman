@@ -206,4 +206,17 @@ public class Maze : MonoBehaviour
 			Destroy(go.transform.GetChild(i));
 		}
 	}
+
+	public PickupType GetLocationPickUpType(Vector2 location)
+	{
+		foreach (var key in pickupItems.Keys)
+		{
+			if (pickupItems[key].Contains(location))
+			{
+				return key;
+			}
+		}
+		
+		return PickupType.NONE;
+	}
 }
