@@ -7,7 +7,7 @@ using System.Web;
 
 public class MazeGraph<Data> : MonoBehaviour where Data : MazeGraph<Data>.PositionData, new()
 {
-	protected Node<PositionData> graph;
+	public Node<PositionData> graph;
 
 	protected GameMode gameMode;
 	protected Maze maze;
@@ -24,7 +24,7 @@ public class MazeGraph<Data> : MonoBehaviour where Data : MazeGraph<Data>.Positi
 		maze = GameObject.Find("Maze").GetComponent<Maze>();
 	}
 
-	void GenerateMsPacManGraph()
+	public void GenerateMsPacManGraph()
 	{
 		var AlreadyVisited = new List<Node<PositionData>>();
 		var NotYetVisited = new List<Node<PositionData>>();
@@ -55,7 +55,7 @@ public class MazeGraph<Data> : MonoBehaviour where Data : MazeGraph<Data>.Positi
 
 	}
 	
-	void GenerateGhostGraph()
+	public void GenerateGhostGraph()
 	{
 		var AlreadyVisited = new List<Node<PositionData>>();
 		var NotYetVisited = new List<Node<PositionData>>();
@@ -166,12 +166,12 @@ public class MazeGraph<Data> : MonoBehaviour where Data : MazeGraph<Data>.Positi
 		}
 	}
 
-	public void DrawPath(List<Node<Data>> path)
+	public void DrawPath(List<Node<PositionData>> path)
 	{
 		DrawPath(path, DrawingColor);
 	}
 
-	public void DrawPath(List<Node<Data>> path, Color color)
+	public void DrawPath(List<Node<PositionData>> path, Color color)
 	{
 		for (int i = 1; i < path.Count; i++)
 		{

@@ -65,5 +65,26 @@ public static class DirectionExtensions
         int rnd = UnityEngine.Random.Range(includeNone ? 0 : 1, numberOfValues); // "1" to not choose "NONE"
         return (Direction)rnd;
     }
+    
+    public static Direction ToDirection(Vector2 vector)
+    {
+        if (vector == Vector2.down)
+        {
+            return Direction.DOWN;
+        }
+        else if (vector == Vector2.up)
+        {
+            return Direction.UP;
+        }
+        else if (vector == Vector2.left)
+        {
+            return Direction.LEFT;
+        } 
+        else if (vector == Vector2.right)
+        {
+            return Direction.RIGHT;
+        }
+        return Direction.NONE;
+    }
 
 }
