@@ -18,15 +18,21 @@ public class SearchMsPacMan : AgentController<MsPacMan>
     private List<Node<PositionData>> currentPath;
 
     private Node<PositionData> currentNode;
+
+    private Rigidbody2D rigidbody;
+
+    private bool newList = false;
     
     void Start()
     {
         map = GetComponent<MazeMap>();
         msPacMan = GetComponent<MsPacMan>();
+        rigidbody = GetComponent<Rigidbody2D>();
         Graph = new MazeGraph<PositionData>();
         Graph.GenerateMsPacManGraph();
         currentNode = Graph.graph;
-        OnDecisionRequired();
+        NextSearch();
+        NextMove();
     }
     
     void Update()
@@ -34,33 +40,65 @@ public class SearchMsPacMan : AgentController<MsPacMan>
         if (agent.currentTile == Graph.graph.data.position)
         {
             currentNode = Graph.graph;
-            OnDecisionRequired();
+            NextSearch();
         }
-            
-        if (currentPath.Count > 0)
+
+        if (newList)
         {
-            Debug.Log(DirectionExtensions.ToDirection(currentPath[0].data.position - currentNode.data.position));
-            agent.Move(DirectionExtensions.ToDirection(currentPath[0].data.position - currentNode.data.position));
+            NextMove();
+            newList = false;
         }
-        else
+        
+        if (newList && currentPath.Count != 0 && currentPath[0].data.position == this.rigidbody.position)
         {
-            OnTileReached();
+            NextMove();
         }
     }
 
+    public void NextSearch()
+    {
+        BreadthFirstSearch.Search(currentNode, GoalTest, out currentPath);
+    }
+    
+    
+    public void NextMove()
+    {
+        if (currentPath.Count == 1)
+        {
+            Debug.Log(DirectionExtensions.ToDirection(currentPath[0].data.position - currentNode.data.position));
+            agent.Move(DirectionExtensions.ToDirection(currentPath[0].data.position - currentNode.data.position), true);
+            currentNode = currentPath[0];
+            currentNode.data.pickUp = PickupType.NONE;
+            NextSearch();
+            newList = true;
+        }
+        
+        if(currentPath.Count > 1)
+        {
+            currentNode = currentPath[0];
+            currentNode.data.pickUp = PickupType.NONE;
+            currentPath.Remove(currentPath[0]);
+            agent.Move(DirectionExtensions.ToDirection(currentPath[0].data.position - currentNode.data.position), true);
+        }
+    }
+    
     public bool GoalTest(Node<PositionData> node)
     {
         return node.data.pickUp == PickupType.PILL;
     }
 
+    
+    
     public override void OnDecisionRequired()
     {
-        BreadthFirstSearch.Search(currentNode, GoalTest, out currentPath);
+        //BreadthFirstSearch.Search(currentNode, GoalTest, out currentPath);
     }
 
     public override void OnTileReached()
     {
+        /*
         currentNode.data.pickUp = PickupType.NONE;
+        currentPath.Remove(currentPath[0]);
         if (currentPath.Count <= 0)
         {
             OnDecisionRequired();
@@ -68,8 +106,7 @@ public class SearchMsPacMan : AgentController<MsPacMan>
         else
         {
             currentNode = currentPath[0];
-            currentPath.Remove(currentPath[0]);
-        }
+        }*/
     }
 
     private void FindCurrentNode(Node<PositionData> node)

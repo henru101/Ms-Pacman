@@ -120,7 +120,7 @@ public abstract class Agent : MonoBehaviour
         {
             // Controller can update the next move
             SendMessage("OnTileReached", SendMessageOptions.DontRequireReceiver);
-
+            
             UpdateDirection();
         }
 
