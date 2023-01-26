@@ -21,7 +21,7 @@ public class SimpleGame : GameMode
 
     [SerializeField]
     int GhostsEdibleTime = 10;
-
+    
     protected override void OnGhostEncounter(MsPacMan pacMan, Ghost ghost)
     {
         if (IsGhostEdible(ghost))
@@ -32,6 +32,7 @@ public class SimpleGame : GameMode
         else
         {
             GameData.lives--;
+            GameObject.Find("Maze").GetComponent<SmellMap>().ResetSmellMap();
             if (GameData.lives == 0)
             {
                 ResetGame();
