@@ -12,11 +12,8 @@ namespace Graphs
         {	
 			Node<T> node = startNode;
 			path = new List<Node<T>>();
-			path.Add(startNode);
-			if(goalTest(startNode)) {
-				return true;
-			}
 
+			Dictionary<Node<T>, Node<T>> cameFrom = new Dictionary<Node<T>, Node<T>>();
 			Queue<Node<T>> queue = new Queue<Node<T>>();
 			queue.Enqueue(node);
 
@@ -27,15 +24,15 @@ namespace Graphs
 				node = queue.Dequeue();
 
 				explored.Add(node);
-
+				if(goalTest(node))
+				{
+					path = AStar.ReconstructPath(cameFrom, node);
+					return true;
+				}
 				foreach(Node<T> child in node.Neighbors) {
 					if (!queue.Contains(child) && !explored.Contains(child)) {
-						path.Add(child);
-						if(goalTest(child)) {
-							return true;
-						}
+						cameFrom[child] = node;
 						queue.Enqueue(child);
-						path.Remove(child);
 					}
 				}
 			}

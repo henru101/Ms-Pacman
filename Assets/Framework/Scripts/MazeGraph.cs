@@ -5,7 +5,7 @@ using UnityEngine;
 using Graphs;
 using System.Web;
 
-public class MazeGraph<Data> : MonoBehaviour where Data : MazeGraph<Data>.PositionData, new()
+public class MazeGraph<Data> : MonoBehaviour
 {
 	public Node<PositionData> graph;
 
@@ -26,10 +26,11 @@ public class MazeGraph<Data> : MonoBehaviour where Data : MazeGraph<Data>.Positi
 
 	public void GenerateMsPacManGraph()
 	{
+		maze = GameObject.Find("Maze").GetComponent<Maze>();
 		var AlreadyVisited = new List<Node<PositionData>>();
 		var NotYetVisited = new List<Node<PositionData>>();
 		Node<PositionData> currentNode;
-		
+
 		graph = new Node<PositionData>(new PositionData(maze.msPacManSpawn, maze.GetLocationPickUpType(maze.msPacManSpawn)));
 		NotYetVisited.Add(graph);
 
@@ -178,21 +179,6 @@ public class MazeGraph<Data> : MonoBehaviour where Data : MazeGraph<Data>.Positi
 			Debug.DrawLine(path[i - 1].data.position - DrawingOffset,
 						   path[i].data.position - DrawingOffset,
 						   color);
-		}
-	}
-
-	public class PositionData
-	{
-		public Vector2 position;
-		public PickupType pickUp;
-
-		public string FYI =
-			"A node is a basic unit of a data structure, such as a linked list or tree data structure. Nodes contain data and also may link to other nodes. Links between nodes are often implemented by pointers.";
-
-		public PositionData(Vector2 position, PickupType pickUp)
-		{
-			this.position = position;
-			this.pickUp = pickUp;
 		}
 	}
 

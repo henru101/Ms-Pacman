@@ -166,7 +166,7 @@ public abstract class Agent : MonoBehaviour
         }
     }
     
-    public void TeleportTo(Vector2 position) {
+    public virtual void TeleportTo(Vector2 position) {
         rigidbody.position = position;
         targetTile = currentTile + currentMove.ToVector2();
     }

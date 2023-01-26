@@ -13,8 +13,8 @@ namespace Graphs
 			cost = float.PositiveInfinity;
 
 			PriorityQueue<Node<T>> openSet = new PriorityQueue<Node<T>>();
-
-			//SortedDictionary<double, Node<T>> openSet = new SortedDictionary<double, Node<T>>();
+			
+			openSet.Enqueue(startNode, heuristic(startNode));
 
 			Dictionary<Node<T>, Node<T>> cameFrom = new Dictionary<Node<T>, Node<T>>();
 
@@ -29,50 +29,39 @@ namespace Graphs
 			while(openSet.Count() != 0) {
 				var current = openSet.Dequeue();
 				
-				if(goalTest(current)) {
+				if(goalTest(current))
+				{
+					path = ReconstructPath(cameFrom, current);
 					return true;
 				}
 
 				foreach(Node<T> child in current.Neighbors) {
-					var tentative_gScore = gScore[current] + AStar.Distance(current, child);
+					var tentative_gScore = gScore[current] + current.Edges[child];
 
 					if(tentative_gScore - gScore[child] < 0) {
 						cameFrom[child] = current;
 						gScore[child] = tentative_gScore;
 						fScore[child] = tentative_gScore + heuristic(child);
 
-						if( openSet.Contains(child)) {
+						if(!openSet.Contains(child)) {
 							openSet.Enqueue(child, fScore[child]);
 						}
 					}
-
-
-
-				
-				
-				
-				
+					
 				}
 			}
 			return false;
 		}
 		
-		private static double Distance<T>(Node<T> a, Node<T> b) {
-		return 0;
-	}private static  List<Node<T>> ReconstructPath<T>(Dictionary<Node<T>, Node<T>> cameFrom, Node<T> current) {
-		 List<Node<T>> path = new List<Node<T>>();
-		var total_path = current;
-		while (cameFrom.ContainsKey(current)) {
-			path.Add(current);
+		public static  List<Node<T>> ReconstructPath<T>(Dictionary<Node<T>, Node<T>> cameFrom, Node<T> current) {
+			List<Node<T>> path = new List<Node<T>>();
+			var total_path = current;
+			while (cameFrom.ContainsKey(total_path)) {
+				path.Add(total_path);
+				total_path = cameFrom[total_path];
+			}
+			path.Reverse();
+			return path;
 		}
-		path.Reverse();
-		return path;
 	}
-	}
-
-	
-
-	/*
-	
-	*/
 }

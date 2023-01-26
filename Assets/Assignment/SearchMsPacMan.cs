@@ -6,39 +6,49 @@ using UnityEngine;
 
 [RequireComponent(typeof(MazeMap))]
 [RequireComponent(typeof(Eyes))]
-public class SearchMsPacMan<Data> : AgentController<MsPacMan> where Data : MazeGraph<Data>.PositionData, new()
+public class SearchMsPacMan : AgentController<MsPacMan>
 {
 
     private MazeMap map;
     private MsPacMan msPacMan;
-    private MazeGraph<Data> Graph;
+    private MazeGraph<PositionData> Graph;
 
-    private List<Node<MazeGraph<Data>.PositionData>> searchedNodes;
+    private List<Node<PositionData>> searchedNodes;
     
-    private List<Node<MazeGraph<Data>.PositionData>> currentPath;
+    private List<Node<PositionData>> currentPath;
 
-    private Node<MazeGraph<Data>.PositionData> currentNode;
+    private Node<PositionData> currentNode;
     
     void Start()
     {
         map = GetComponent<MazeMap>();
         msPacMan = GetComponent<MsPacMan>();
-        Graph = new MazeGraph<Data>();
+        Graph = new MazeGraph<PositionData>();
         Graph.GenerateMsPacManGraph();
-        
+        currentNode = Graph.graph;
+        OnDecisionRequired();
     }
     
     void Update()
     {
-        agent.Move(DirectionExtensions.ToDirection(currentPath[0].data.position - currentNode.data.position));
-        
-        if (agent.currentTile == currentPath[0].data.position)
+        if (agent.currentTile == Graph.graph.data.position)
+        {
+            currentNode = Graph.graph;
+            OnDecisionRequired();
+        }
+            
+        if (currentPath.Count > 0)
+        {
+            Debug.Log(DirectionExtensions.ToDirection(currentPath[0].data.position - currentNode.data.position));
+            agent.Move(DirectionExtensions.ToDirection(currentPath[0].data.position - currentNode.data.position));
+        }
+        else
         {
             OnTileReached();
         }
     }
 
-    public bool GoalTest(Node<MazeGraph<Data>.PositionData> node)
+    public bool GoalTest(Node<PositionData> node)
     {
         return node.data.pickUp == PickupType.PILL;
     }
@@ -50,16 +60,19 @@ public class SearchMsPacMan<Data> : AgentController<MsPacMan> where Data : MazeG
 
     public override void OnTileReached()
     {
-        currentNode = currentPath[0];
-        currentPath.Remove(currentPath[0]);
-
+        currentNode.data.pickUp = PickupType.NONE;
         if (currentPath.Count <= 0)
         {
             OnDecisionRequired();
         }
+        else
+        {
+            currentNode = currentPath[0];
+            currentPath.Remove(currentPath[0]);
+        }
     }
 
-    private void FindCurrentNode(Node<MazeGraph<Data>.PositionData> node)
+    private void FindCurrentNode(Node<PositionData> node)
     {
         if (agent.currentTile == node.data.position)
         {
