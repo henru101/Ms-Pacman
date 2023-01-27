@@ -21,8 +21,6 @@ public class SearchMsPacMan : AgentController<MsPacMan>
 
     private Rigidbody2D rigidbody;
 
-    private bool newList = false;
-    
     void Start()
     {
         map = GetComponent<MazeMap>();
@@ -31,57 +29,10 @@ public class SearchMsPacMan : AgentController<MsPacMan>
         Graph = new MazeGraph<PositionData>();
         Graph.GenerateMsPacManGraph();
         currentNode = Graph.graph;
-        NextSearch();
-        NextMove();
-    }
-    
-    void Update()
-    {
-        if (agent.currentTile == Graph.graph.data.position)
-        {
-            currentNode = Graph.graph;
-            NextSearch();
-        }
-
-        if (newList)
-        {
-            NextMove();
-            newList = false;
-        }
-        
-        if (newList && currentPath.Count != 0 && currentPath[0].data.position == this.rigidbody.position)
-        {
-            NextMove();
-        }
-    }
-
-    public void NextSearch()
-    {
         BreadthFirstSearch.Search(currentNode, GoalTest, out currentPath);
     }
-    
-    
-    public void NextMove()
-    {
-        if (currentPath.Count == 1)
-        {
-            Debug.Log(DirectionExtensions.ToDirection(currentPath[0].data.position - currentNode.data.position));
-            agent.Move(DirectionExtensions.ToDirection(currentPath[0].data.position - currentNode.data.position), true);
-            currentNode = currentPath[0];
-            currentNode.data.pickUp = PickupType.NONE;
-            NextSearch();
-            newList = true;
-        }
-        
-        if(currentPath.Count > 1)
-        {
-            currentNode = currentPath[0];
-            currentNode.data.pickUp = PickupType.NONE;
-            currentPath.Remove(currentPath[0]);
-            agent.Move(DirectionExtensions.ToDirection(currentPath[0].data.position - currentNode.data.position), true);
-        }
-    }
-    
+
+
     public bool GoalTest(Node<PositionData> node)
     {
         return node.data.pickUp == PickupType.PILL;
@@ -91,22 +42,24 @@ public class SearchMsPacMan : AgentController<MsPacMan>
     
     public override void OnDecisionRequired()
     {
-        //BreadthFirstSearch.Search(currentNode, GoalTest, out currentPath);
+        this.GetComponent<MsPacMan>().Move(DirectionExtensions.ToDirection(currentPath[0].data.position - currentNode.data.position));
     }
 
     public override void OnTileReached()
     {
-        /*
-        currentNode.data.pickUp = PickupType.NONE;
-        currentPath.Remove(currentPath[0]);
-        if (currentPath.Count <= 0)
+        if (currentPath.Count > 1)
         {
-            OnDecisionRequired();
+            currentNode = currentPath[0];
+            currentNode.data.pickUp = PickupType.NONE;
+            currentPath.Remove(currentNode);
         }
         else
         {
             currentNode = currentPath[0];
-        }*/
+            currentNode.data.pickUp = PickupType.NONE;
+            BreadthFirstSearch.Search(currentNode, GoalTest, out currentPath);
+        }
+        
     }
 
     private void FindCurrentNode(Node<PositionData> node)

@@ -26,6 +26,8 @@ public class MazeGraph<Data> : MonoBehaviour
 
 	public void GenerateMsPacManGraph()
 	{
+		//x = 27 y = 30
+		/*
 		maze = GameObject.Find("Maze").GetComponent<Maze>();
 		var AlreadyVisited = new List<Node<PositionData>>();
 		var NotYetVisited = new List<Node<PositionData>>();
@@ -51,9 +53,37 @@ public class MazeGraph<Data> : MonoBehaviour
 			}
 			NotYetVisited.Remove(currentNode);
 			AlreadyVisited.Add(currentNode);
+		}*/
+		
+		maze = GameObject.Find("Maze").GetComponent<Maze>();
+		List<Node<PositionData>> allNodes = new List<Node<PositionData>>();
+
+		for (int i = 0; i < maze.Width; i++)
+		{
+			for (int j = 0; j < maze.Height; j++)
+			{
+				if (maze.IsTileWalkable(i, j))
+				{
+					var position = new Vector2(i, j);
+					allNodes.Add(new Node<PositionData>(new PositionData(position, maze.GetLocationPickUpType(position))));
+				}
+			}
 		}
 
+		foreach (var node in allNodes)
+		{
+			List<Direction> NeighborDirections= maze.GetPossibleDirectionsOfTile(node.data.position);
+			
+			
+			
+			foreach (var Direction in NeighborDirections)
+			{
+				var position = node.data.position + Direction.ToVector2();
+				node.SetEdge(ReturnNodeWithPosition(allNodes, position), 1);
+			}
+		}
 
+		graph = ReturnNodeWithPosition(allNodes, new Vector2(13, 13));
 	}
 	
 	public void GenerateGhostGraph()
@@ -126,6 +156,19 @@ public class MazeGraph<Data> : MonoBehaviour
 		}
 
 		return false;
+	}
+
+	private Node<PositionData> ReturnNodeWithPosition(List<Node<PositionData>> list, Vector2 position)
+	{
+		foreach (var node in list)
+		{
+			if (node.data.position == position)
+			{
+				return node;
+			}
+		}
+		Debug.Log("Der Müll hier funkt nicht!");
+		return null;
 	}
 
 	void Update()

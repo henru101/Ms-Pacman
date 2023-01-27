@@ -54,6 +54,10 @@ public class Maze : MonoBehaviour
 	/// <param name="position">The (x,y) coordinate.</param>
 	public bool IsTileWalkable(Vector2 position)
 	{
+		if (position.x < 0 || position.x >= Width || position.y < 0 || position.y >= Height)
+		{
+			return false;
+		}
 		return IsTileWalkable((int)position.x, (int)position.y);
 	}
 
