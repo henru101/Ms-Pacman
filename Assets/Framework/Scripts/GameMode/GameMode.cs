@@ -32,6 +32,7 @@ public abstract class GameMode : MonoBehaviour
 	Maze maze = null;
 
 	protected MsPacMan player;
+	protected SearchMsPacMan msPacManController;
 	protected Dictionary<GhostName, Ghost> ghosts = new Dictionary<GhostName, Ghost>();
 	protected Dictionary<GhostName, bool> ghostsEdible = new Dictionary<GhostName, bool>();
 
@@ -51,6 +52,8 @@ public abstract class GameMode : MonoBehaviour
 		InstantiatePlayer();
 		InstantiatePowerUps();
 		InstantiateJunctions();
+		msPacManController = GameObject.Find("MsPacMan(Clone)").GetComponent<SearchMsPacMan>();
+		Debug.Log(msPacManController);
 	}
 
 	protected void ResetGame()

@@ -31,7 +31,7 @@ public class SearchMsPacMan : AgentController<MsPacMan>
         Graph = new MazeGraph<PositionData>();
         Graph.GenerateMsPacManGraph();
         currentNode = Graph.graph;
-        BreadthFirstSearch.Search(currentNode, GoalTestBFS, out currentPath);
+        DoBreadthFirstSearch();
     }
 
 
@@ -48,7 +48,6 @@ public class SearchMsPacMan : AgentController<MsPacMan>
         {
             if (ghost.currentTile == node.data.position)
             {
-                Debug.Log(ghost.currentTile);
                 return true;
             }
         }
@@ -74,12 +73,14 @@ public class SearchMsPacMan : AgentController<MsPacMan>
         {
             if (!gameMode.IsAnyGhostEdible())
             {
-                BreadthFirstSearch.Search(currentNode, GoalTestBFS, out currentPath);
+                DoBreadthFirstSearch();
+                return;
             }
             else
             {
                 double cost;
                 AStar.Search(currentNode, HeuristicAStar, GoalTestAStar, Graph.GetAllNodes(), out currentPath, out cost);
+                return;
             }
         }
         currentNode = currentPath[0];
@@ -102,6 +103,11 @@ public class SearchMsPacMan : AgentController<MsPacMan>
             }
         }
         
+    }
+
+    public void DoBreadthFirstSearch()
+    {
+        BreadthFirstSearch.Search(currentNode, GoalTestBFS, out currentPath);
     }
 
     private void FindCurrentNode(Node<PositionData> node)

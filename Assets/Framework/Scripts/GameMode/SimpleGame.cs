@@ -33,6 +33,7 @@ public class SimpleGame : GameMode
         {
             GameData.lives--;
             GameObject.Find("Maze").GetComponent<SmellMap>().ResetSmellMap();
+            msPacManController.DoBreadthFirstSearch();
             if (GameData.lives == 0)
             {
                 ResetGame();
