@@ -6,7 +6,7 @@ namespace Graphs
 {
 	public static class AStar
 	{
-		public static bool Search<T>(Node<T> startNode, Func<Node<T>, double> heuristic, Func<Node<T>, bool> goalTest, out List<Node<T>> path, out double cost)
+		public static bool Search<T>(Node<T> startNode, Func<Node<T>, double> heuristic, Func<Node<T>, bool> goalTest, List<Node<T>> AllNodes, out List<Node<T>> path, out double cost)
 		{
 			path = new List<Node<T>>();
 
@@ -19,12 +19,12 @@ namespace Graphs
 			Dictionary<Node<T>, Node<T>> cameFrom = new Dictionary<Node<T>, Node<T>>();
 
 			Dictionary<Node<T>, double> gScore = new Dictionary<Node<T>, double>();
-
-			gScore.Add(startNode, 0);
+			AddAllNodesWithInfinityToDictionary(gScore, AllNodes);
+			gScore[startNode] = 0;
 
 			Dictionary<Node<T>, double> fScore = new Dictionary<Node<T>, double>();
-
-			fScore.Add(startNode, heuristic(startNode));
+			AddAllNodesWithInfinityToDictionary(fScore, AllNodes);
+			fScore[startNode] = heuristic(startNode);
 
 			while(openSet.Count() != 0) {
 				var current = openSet.Dequeue();
@@ -51,6 +51,14 @@ namespace Graphs
 				}
 			}
 			return false;
+		}
+
+		private static void AddAllNodesWithInfinityToDictionary<T>(Dictionary<Node<T>, double> dictionary, List<Node<T>> AllNodes)
+		{
+			foreach (var node in AllNodes)
+			{
+				dictionary.Add(node, double.PositiveInfinity);
+			}
 		}
 		
 		public static  List<Node<T>> ReconstructPath<T>(Dictionary<Node<T>, Node<T>> cameFrom, Node<T> current) {

@@ -8,7 +8,6 @@ using UnityEngine;
 [RequireComponent(typeof(Eyes))]
 public class SearchMsPacMan : AgentController<MsPacMan>
 {
-
     private MazeMap map;
     private MsPacMan msPacMan;
     private MazeGraph<PositionData> Graph;
@@ -20,41 +19,87 @@ public class SearchMsPacMan : AgentController<MsPacMan>
     private Node<PositionData> currentNode;
 
     private Rigidbody2D rigidbody;
+    
+    
+    private GameMode gameMode;
 
     void Start()
     {
         map = GetComponent<MazeMap>();
         msPacMan = GetComponent<MsPacMan>();
+        gameMode = GameObject.Find("GameMode").GetComponent<SimpleGame>();
         Graph = new MazeGraph<PositionData>();
         Graph.GenerateMsPacManGraph();
         currentNode = Graph.graph;
-        BreadthFirstSearch.Search(currentNode, GoalTest, out currentPath);
+        BreadthFirstSearch.Search(currentNode, GoalTestBFS, out currentPath);
     }
 
 
-    public bool GoalTest(Node<PositionData> node)
+    protected bool GoalTestBFS(Node<PositionData> node)
     {
         return node.data.pickUp == PickupType.PILL;
     }
 
+    protected bool GoalTestAStar(Node<PositionData> node)
+    {
+        List<Ghost> ghostList = gameMode.GetAllGhosts();
+
+        foreach (var ghost in ghostList)
+        {
+            if (ghost.currentTile == node.data.position)
+            {
+                Debug.Log(ghost.currentTile);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected double HeuristicAStar(Node<PositionData> node)
+    {
+        return 1f;
+    }
+
     public override void OnDecisionRequired()
     {
-        this.GetComponent<MsPacMan>().Move(DirectionExtensions.ToDirection(currentPath[0].data.position - currentNode.data.position));
+        if (currentPath.Count != 0)
+        {
+            GetComponent<MsPacMan>().Move(DirectionExtensions.ToDirection(currentPath[0].data.position - currentNode.data.position));
+        }
     }
 
     public override void OnTileReached()
     {
+        if (currentPath.Count == 0)
+        {
+            if (!gameMode.IsAnyGhostEdible())
+            {
+                BreadthFirstSearch.Search(currentNode, GoalTestBFS, out currentPath);
+            }
+            else
+            {
+                double cost;
+                AStar.Search(currentNode, HeuristicAStar, GoalTestAStar, Graph.GetAllNodes(), out currentPath, out cost);
+            }
+        }
+        currentNode = currentPath[0];
+        currentNode.data.pickUp = PickupType.NONE;
+        
         if (currentPath.Count > 1)
         {
-            currentNode = currentPath[0];
-            currentNode.data.pickUp = PickupType.NONE;
             currentPath.Remove(currentNode);
         }
         else
         {
-            currentNode = currentPath[0];
-            currentNode.data.pickUp = PickupType.NONE;
-            BreadthFirstSearch.Search(currentNode, GoalTest, out currentPath);
+            if (!gameMode.IsAnyGhostEdible())
+            {
+                BreadthFirstSearch.Search(currentNode, GoalTestBFS, out currentPath);
+            }
+            else
+            {
+                double cost;
+                AStar.Search(currentNode, HeuristicAStar, GoalTestAStar, Graph.GetAllNodes(), out currentPath, out cost);
+            }
         }
         
     }
@@ -78,4 +123,5 @@ public class SearchMsPacMan : AgentController<MsPacMan>
 
         Debug.Log("current position not in the node graph! Have fun fixing that!");
     }
+    
 }

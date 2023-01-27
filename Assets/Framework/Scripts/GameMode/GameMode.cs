@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public abstract class GameMode : MonoBehaviour
@@ -216,6 +217,11 @@ public abstract class GameMode : MonoBehaviour
 		return ghostsEdible[ghost.id];
 	}
 
+	public bool IsAnyGhostEdible()
+	{
+		return ghostsEdible.ContainsValue(true);
+	}
+
 	protected void SetGhostEdible(Ghost ghost, bool isEdible)
 	{
 		ghostsEdible[ghost.id] = isEdible;
@@ -252,6 +258,16 @@ public abstract class GameMode : MonoBehaviour
 	public Ghost GetGhost(GhostName name)
 	{
 		return ghosts[name];
+	}
+
+	public List<Ghost> GetAllGhosts()
+	{
+		List<Ghost> ghostList = new List<Ghost>();
+		foreach (var ghost in  ghosts)
+		{
+			ghostList.Add(ghost.Value);
+		}
+		return ghostList;
 	}
 
 	public List<PickupItem> GetPickups(PickupType type)

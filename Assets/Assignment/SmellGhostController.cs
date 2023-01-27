@@ -11,7 +11,7 @@ public class SmellGhostController : AgentController<Ghost>
     private Nose nose;
     private Ghost ghost;
 
-    public GameMode gameMode;
+    private GameMode gameMode;
     
     private bool active;
     private float lastTileSmell;

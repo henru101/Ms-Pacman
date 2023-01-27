@@ -18,10 +18,17 @@ public class MazeGraph<Data> : MonoBehaviour
 	[SerializeField] bool Draw = true;
 	[SerializeField] Vector2 DrawingOffset = new Vector2(0, 0);
 	[SerializeField] Color DrawingColor = Color.green;
+	
+	List<Node<PositionData>> allNodes = new List<Node<PositionData>>();
 
 	void Awake()
 	{
 		maze = GameObject.Find("Maze").GetComponent<Maze>();
+	}
+
+	public List<Node<PositionData>> GetAllNodes()
+	{
+		return allNodes;
 	}
 
 	public void GenerateMsPacManGraph()
@@ -56,7 +63,6 @@ public class MazeGraph<Data> : MonoBehaviour
 		}*/
 		
 		maze = GameObject.Find("Maze").GetComponent<Maze>();
-		List<Node<PositionData>> allNodes = new List<Node<PositionData>>();
 
 		for (int i = 0; i < maze.Width; i++)
 		{
