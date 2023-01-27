@@ -97,7 +97,7 @@ public abstract class Agent : MonoBehaviour
         nextMove = Direction.NONE;
 	}
 
-	void Awake()
+	protected virtual void Awake()
     {
         currentMove = Direction.NONE;
         nextMove = Direction.NONE;
@@ -113,14 +113,14 @@ public abstract class Agent : MonoBehaviour
         Reset(rigidbody.position);
     }
 
-    void Update()
+    protected virtual void Update()
     {
         // Agent is exactly at tile center (works due to Vector2.MoveTowards)
         if (targetTile == rigidbody.position)
         {
             // Controller can update the next move
             SendMessage("OnTileReached", SendMessageOptions.DontRequireReceiver);
-            
+
             UpdateDirection();
         }
 

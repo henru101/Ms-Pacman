@@ -15,8 +15,8 @@ public class Ghost : Agent
     protected override bool IsMoveValid(Direction move)
     { 
         // Do not turn around, except at dead ends
-        return currentMove.Opposite() != move 
-                          || maze.GetPossibleDirectionsOfTile(currentTile).Count == 1;
+        //return currentMove.Opposite() != move || maze.GetPossibleDirectionsOfTile(currentTile).Count == 1;
+        return true;
     }
 
     protected override void UpdateAnimation()

@@ -25,7 +25,6 @@ public class SearchMsPacMan : AgentController<MsPacMan>
     {
         map = GetComponent<MazeMap>();
         msPacMan = GetComponent<MsPacMan>();
-        rigidbody = GetComponent<Rigidbody2D>();
         Graph = new MazeGraph<PositionData>();
         Graph.GenerateMsPacManGraph();
         currentNode = Graph.graph;
@@ -38,8 +37,6 @@ public class SearchMsPacMan : AgentController<MsPacMan>
         return node.data.pickUp == PickupType.PILL;
     }
 
-    
-    
     public override void OnDecisionRequired()
     {
         this.GetComponent<MsPacMan>().Move(DirectionExtensions.ToDirection(currentPath[0].data.position - currentNode.data.position));
